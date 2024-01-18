@@ -1,8 +1,7 @@
 """
 
 Implementation of artificial potential field pathfinding algorithm
-Improve the artificial potential field to solve the inaccessibility problem, but there is still the problem of local minimum point
-"""
+Improve the artificial potential field to solve the inaccessibility problem, and the local minima problem"""
 from Original_APF import APF, Vector2d
 import matplotlib.pyplot as plt
 import math
@@ -39,14 +38,14 @@ class APF_Improved(APF):
         rep = Vector2d(0, 0)  
         for obstacle in self.obstacles:
             # obstacle = Vector2d(0, 0)
-            obs_to_rob = self.current_pos - obstacle #distance from robot and obstable
-            rob_to_goal = self.goal - self.current_pos #distance from goal to position
-            if (obs_to_rob.length > self.rr):  
+            rob_to_obs = self.current_pos - obstacle #distance from robot and obstable
+            rob_to_goal = self.goal -self.current_pos#distance from goal to position
+            if (rob_to_obs.length > self.rr):  
                 pass
             else:
-                rep_1 = Vector2d(obs_to_rob.direction[0], obs_to_rob.direction[1]) * self.k_rep * (
-                        1.0 / obs_to_rob.length - 1.0 / self.rr) / (obs_to_rob.length ** 2) * (rob_to_goal.length ** 2)
-                rep_2 = Vector2d(rob_to_goal.direction[0], rob_to_goal.direction[1]) * self.k_rep * ((1.0 / obs_to_rob.length - 1.0 / self.rr) ** 2) * rob_to_goal.length
+                rep_1 = Vector2d(rob_to_obs.direction[0], rob_to_obs.direction[1]).mul(rob_to_goal.pow())* self.k_rep * (
+                        1.0 / rob_to_obs.length - 1.0 / self.rr) / (rob_to_obs.length ** 2)  
+                rep_2 = Vector2d(rob_to_goal.direction[0], rob_to_goal.direction[1]).mul(rob_to_goal) * self.k_rep * ((1.0 / rob_to_obs.length - 1.0 / self.rr) ** 2) 
                 rep +=(rep_1+rep_2)
         return rep
 
@@ -54,7 +53,7 @@ class APF_Improved(APF):
 if __name__ == '__main__':
     k_att, k_rep = 1.0, 0.8
     rr = 1
-    step_size, max_iters, goal_threashold = .5, 1000, .2  # It takes 4.37s to find the path 1000 times with a step size of 0.5, and 21s for 1000 times with a step size of 0.1.
+    step_size, max_iters, goal_threashold = .2, 1000, .2  # It takes 4.37s to find the path 1000 times with a step size of 0.5, and 21s for 1000 times with a step size of 0.1.
     step_size_ = 2
 
     start, goal = (0, 0), (15, 15)
@@ -66,10 +65,10 @@ if __name__ == '__main__':
         subplot.set_ylabel('Y-distance: m')
         subplot.plot(start[0], start[1], '*r')
         subplot.plot(goal[0], goal[1], '*r')
-    # 障碍物设置及绘制
+    # Obstacle setting and drawing
     obs = [[1, 0],[1,4], [2, 0],[2,4], [3, 0],[3,4],[4,0] ,[4, 4],[5,0], [5, 4], [6, 0],[6,4],[7,0], [7, 4], [8, 0],[8,4]]
     print('obstacles: {0}'.format(obs))
-    for i in range(2):
+    for i in range(0):
         obs.append([random.uniform(2, goal[1] - 1), random.uniform(2, goal[1] - 1)])
 
     if is_plot:
@@ -99,7 +98,7 @@ if __name__ == '__main__':
         print('planed path points:{}'.format(path_))
         print('path plan success')
         if is_plot:
-            px, py = [K[0] for K in path_], [K[1] for K in path_]  # 路径点x坐标列表, y坐标列表
+            px, py = [K[0] for K in path_], [K[1] for K in path_]  #Path point x coordinate list, y coordinate list
             subplot.plot(px, py, '^k')
             plt.show()
     else:
