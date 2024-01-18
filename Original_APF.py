@@ -51,9 +51,22 @@ class Vector2d():
         vec.deltaY *= other
         vec.vector2d_share()
         return vec
+    
+    def mul(self,X):
+        vec = Vector2d(self.deltaX,self.deltaY)
+        vec.deltaX *= X.deltaX
+        vec.deltaY *=X.deltaY
+        return vec
+        
 
     def __truediv__(self, other):
         return self.__mul__(1.0 / other)
+    def pow(self):
+        vec = Vector2d(self.deltaX, self.deltaY)
+        vec.deltaX *= vec.deltaX
+        vec.deltaY *=vec.deltaY
+        vec.vector2d_share()
+        return vec
 
     def __repr__(self):
         return 'Vector deltaX:{}, deltaY:{}, length:{}, direction:{}'.format(self.deltaX, self.deltaY, self.length,
